@@ -36,7 +36,7 @@ Route::prefix('dashboard')
         Route::resource('hasils',HasilController::Class);
     });
 
-
+Route::get('/hitung', [\App\Http\Controllers\PerhitunganController::class, 'index']);
 Route::get('midtrans/success', [MidtransController::class,'success']);
 Route::get('midtrans/unfinish', [MidtransController::class,'unfinish']);
 Route::get('midtrans/error', [MidtransController::class,'error']);

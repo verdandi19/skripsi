@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddMasterBarang extends Migration
+class AddTransaction extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class AddMasterBarang extends Migration
      */
     public function up()
     {
-        Schema::create('barang', function (Blueprint $table) {
+        Schema::create('transaction', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->integer('qty');
+            $table->string('no_transaksi');
+            $table->date('tgl_transaksi');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class AddMasterBarang extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('barang');
+        Schema::dropIfExists('transaction');
     }
 }
