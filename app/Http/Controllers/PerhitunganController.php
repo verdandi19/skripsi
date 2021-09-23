@@ -18,7 +18,7 @@ class PerhitunganController extends Controller
             array_push($data, $v->id);
         }
 
-        $result = [];
+//        $result = [];
         foreach ($data as $key => $v) {
 //            foreach ($data as $v2){
 //                if($v === $v2){
@@ -40,6 +40,7 @@ class PerhitunganController extends Controller
             'barang' => $barang
         ], 200);
     }
+
 
     public function mapping()
     {
@@ -82,15 +83,102 @@ class PerhitunganController extends Controller
                 $support_1[$code] = $support_result;
             }
 
+            $idItems = [];
+            foreach ($item as $i) {
+                array_push($idItems, $i->code);
+            }
+
+            $combination_chance = $this->allSubsets($idItems, 3);
             $result = [
                 'data' => $data,
                 'summary' => $code_summary,
-                'support_1' => $support_1
+                'support_1' => $support_1,
+                'combination_chance' => $combination_chance,
             ];
             return response()->json($result, 200);
         } catch (\Exception $e) {
             return response()->json($e->getMessage(), 500);
         }
 
+    }
+
+    public function allItem()
+    {
+        $items = Barang::all();
+        $results = [];
+        foreach ($items as $item) {
+            array_push($results, $item->id);
+        }
+        return response()->json(['data' => $results], 200);
+    }
+
+    private function recursive($elements = [])
+    {
+        if (count($elements) === 0) {
+            return [[]];
+        }
+        $firstEl = $elements[0];
+
+        $rest = array_slice($elements, 1);
+        dump($rest);
+        $combsWithoutFirst = $this->recursive($rest);
+        dump($combsWithoutFirst);
+        die();
+        $combsWithFirst = [];
+        foreach ($combsWithoutFirst as $item) {
+            $temp = array_push($item, $firstEl);
+            array_push($combsWithFirst, $temp);
+        }
+        return [$combsWithoutFirst, $combsWithFirst];
+    }
+
+    function combinations(array $myArray, $choose) {
+        global $result, $combination;
+        dd($result);
+        $n = count($myArray);
+        function inner ($start, $choose_, $arr, $n) {
+            global $result, $combination;
+
+            if ($choose_ == 0) array_push($result,$combination);
+            else for ($i = $start; $i <= $n - $choose_; ++$i) {
+                array_push($combination, $arr[$i]);
+                inner($i + 1, $choose_ - 1, $arr, $n);
+                array_pop($combination);
+            }
+
+        }
+        inner(0, $choose, $myArray, $n);
+        return $result;
+    }
+
+
+    function allSubsets($set, $size) {
+        $subsets = [];
+        if ($size == 1) {
+            return array_map(function ($v) { return [$v]; },$set);
+        }
+        foreach ($this->allSubsets($set,$size-1) as $subset) {
+            foreach ($set as $element) {
+                if (!in_array($element,$subset)) {
+                    $newSet = array_merge($subset,[$element]);
+                    sort($newSet);
+                    if (!in_array($newSet,$subsets)) {
+                        $subsets[] = array_merge($subset,[$element]);
+                    }
+                }
+            }
+        }
+        return $subsets;
+
+    }
+    public function testToMap()
+    {
+        $items = Barang::all();
+        $results = [];
+        foreach ($items as $item) {
+            array_push($results, $item->id);
+        }
+        $arr = $this->allSubsets($results, 3);
+        return $arr;
     }
 }
