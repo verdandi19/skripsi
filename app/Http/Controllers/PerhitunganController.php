@@ -85,15 +85,23 @@ class PerhitunganController extends Controller
 
             $idItems = [];
             foreach ($item as $i) {
-                array_push($idItems, $i->code);
+                array_push($idItems, $i->id);
             }
 
+//            dd($idItems);
             $combination_chance = $this->allSubsets($idItems, 3);
+            $temp = [];
+            foreach ($combination_chance as $combination){
+                $it = Barang::find($combination);
+                array_push($temp, $it);
+            }
             $result = [
                 'data' => $data,
                 'summary' => $code_summary,
                 'support_1' => $support_1,
                 'combination_chance' => $combination_chance,
+                'count' => count($combination_chance),
+                'item' => $temp,
             ];
             return response()->json($result, 200);
         } catch (\Exception $e) {
