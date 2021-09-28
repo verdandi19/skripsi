@@ -86,6 +86,7 @@ class PerhitunganController extends Controller
                     foreach ($tmpItemSet as $item) {
                         $item_title .= $item->nama . ', ';
                     }
+                    $tmpResults['item_set'] = $item_set;
                     $tmpResults['title'] = $item_title;
                     $tmpCount = count($this->getItemExist($item_set));
                     $tmpResults['count'] = $tmpCount;
@@ -100,7 +101,12 @@ class PerhitunganController extends Controller
                     $tmpResults['support'] = $support;
                     array_push($itemSetResults, $tmpResults);
                 }
-                array_push($results, $itemSetResults);
+                $data = [
+                    'item_set' => $itemSetIndex,
+                    'data' => $itemSetResults,
+                    'escape_item' => $nextItem
+                ];
+                array_push($results, $data);
                 if(count($nextItem) < ($itemSetIndex + 1)) {
                     $isEscape = false;
                 }
@@ -110,6 +116,8 @@ class PerhitunganController extends Controller
                     break;
                 }
             }
+
+
             return response()->json([
                 'data' => $results,
                 'transaction' => $countTransaction
