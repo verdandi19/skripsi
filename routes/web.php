@@ -38,6 +38,7 @@ Route::prefix('dashboard')
 
 Route::get('/hitung', [\App\Http\Controllers\PerhitunganController::class, 'index']);
 Route::get('/mapping', [\App\Http\Controllers\PerhitunganController::class, 'mapping']);
+Route::get('/mapping2', [\App\Http\Controllers\PerhitunganController::class, 'mapping2']);
 Route::get('/all-item', [\App\Http\Controllers\PerhitunganController::class, 'allItem']);
 Route::get('/test-to-map', [\App\Http\Controllers\PerhitunganController::class, 'testToMap']);
 Route::get('midtrans/success', [MidtransController::class,'success']);
