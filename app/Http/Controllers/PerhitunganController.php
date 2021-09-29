@@ -62,11 +62,25 @@ class PerhitunganController extends Controller
     {
         try {
             $barang = Barang::all();
-            $transaction = Transaction::all();
+            $tglAwal = request()->query->get('awal');
+            $tglAkhir = request()->query->get('akhir');
+            $vSupport = request()->query->get('support');
+            $vConfidence = request()->query->get('confidence');
+            $minSupport = $vSupport;
+            $minConfidence = $vConfidence;
+            if (!$tglAwal || !$tglAkhir || !$vSupport || !$vConfidence) {
+                return response()->json(['msg' => 'Parameter salah', 'code' => 202], 202);
+            }
+            $timeAwal = strtotime($tglAwal);
+            $timeAkhir = strtotime($tglAkhir);
+            $vAwal = date('Y-m-d', $timeAwal);
+            $vAkhir = date('Y-m-d', $timeAkhir);
+            $transaction = Transaction::with('cart')->whereBetween('tgl_transaksi', [$vAwal, $vAkhir])->get();
+//            return response()->json(['msg' => $transaction,], 202);
             $countTransaction = count($transaction);
             $maxLoop = count($barang);
             $isEscape = true;
-            $minSupport = 30;
+
             $itemAvailable = [];
             foreach ($barang as $value) {
                 array_push($itemAvailable, $value->id);
@@ -91,9 +105,9 @@ class PerhitunganController extends Controller
                     $tmpCount = count($this->getItemExist($item_set));
                     $tmpResults['count'] = $tmpCount;
                     $support = round(($tmpCount * 100) / $countTransaction, 1, PHP_ROUND_HALF_UP);
-                    if($support >= $minSupport) {
+                    if ($support >= $minSupport) {
                         foreach ($item_set as $single_item) {
-                            if(!in_array($single_item, $nextItem)) {
+                            if (!in_array($single_item, $nextItem)) {
                                 array_push($nextItem, $single_item);
                             }
                         }
@@ -107,7 +121,7 @@ class PerhitunganController extends Controller
                     'escape_item' => $nextItem
                 ];
                 array_push($results, $data);
-                if(count($nextItem) < ($itemSetIndex + 1)) {
+                if (count($nextItem) < ($itemSetIndex + 1)) {
                     $isEscape = false;
                 }
 
@@ -117,12 +131,59 @@ class PerhitunganController extends Controller
                 }
             }
 
+            $data_confidence = [];
+            if (count($results) > 1) {
+                foreach ($results as $key => $data) {
+                    if ($key > 0) {
+                        $data_item = $data['data'];
+                        $data_set = $data['item_set'];
+//                        $tmpDataSet = [];
+                        foreach ($data_item as $di) {
+                            $tmpDS = [];
+                            $set = $di['item_set'];
+                            $set_count = $di['count'];
+                            $set_title = $di['title'];
+                            $set_support = $di['support'];
+                            $confidence_divider = count($this->getItemExist([$set[0]]));
+                            $confidence = round(($set_count * 100) / $confidence_divider, 1, PHP_ROUND_HALF_UP);
+                            $tmpDS['title'] = $set_title;
+                            $tmpDS['set'] = $data_set;
+                            $tmpDS['item_set'] = $set;
+                            $tmpDS['support'] = $set_support;
+                            $tmpDS['confidence'] = $confidence;
+                            $tmpDS['calculation'] = '(' . $set_count . '/' . $confidence_divider . ')';
+                            array_push($data_confidence, $tmpDS);
+                        }
+//                        array_push($data_confidence, [
+//                            'item_set' => $data_set,
+//                            'data' => $tmpDataSet
+//                        ]);
+                    }
+                }
+            }
+
+            $data_association = [];
+            foreach ($data_confidence as $dc) {
+                if ($dc['confidence'] >= $minConfidence) {
+                    $last_item = end($dc['item_set']);
+                    $bc_multiplier = count($this->getItemExist([$last_item]));
+                    $benchmark_confidence = round(($bc_multiplier * 100) / $countTransaction, 1, PHP_ROUND_HALF_UP);
+                    $lift_ratio = round($dc['confidence'] / $benchmark_confidence, 5, PHP_ROUND_HALF_UP);
+                    $dc['benchmark'] = $benchmark_confidence;
+                    $dc['lift_ratio'] = $lift_ratio;
+                    $dc['correlation'] = $lift_ratio >= 1 ? 'Positif' : 'Negatif';
+                    array_push($data_association, $dc);
+                }
+            }
 
             return response()->json([
-                'data' => $results,
+                'code' => 200,
+                'data_support' => $results,
+                'data_confidence' => $data_confidence,
+                'data_association' => $data_association,
                 'transaction' => $countTransaction
             ], 200);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'msg' => $e->getMessage()
             ], 500);
@@ -339,5 +400,10 @@ class PerhitunganController extends Controller
         }
         $arr = $this->allSubsets($results, 3);
         return $arr;
+    }
+
+    public function page()
+    {
+        return view('Perhitungan.index');
     }
 }

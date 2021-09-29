@@ -34,6 +34,27 @@ Route::prefix('dashboard')
         Route::resource('data', DataController::class);
         Route::resource('proses',ProsesController::Class);
         Route::resource('hasils',HasilController::Class);
+
+        Route::get('/barang',[\App\Http\Controllers\BarangController::class, 'index']);
+        Route::get('/barang/create',[\App\Http\Controllers\BarangController::class, 'create']);
+        Route::get('/barang/edit/{id}',[\App\Http\Controllers\BarangController::class, 'edit']);
+        Route::post('/barang/store',[\App\Http\Controllers\BarangController::class, 'store']);
+        Route::post('/barang/patch',[\App\Http\Controllers\BarangController::class, 'patch']);
+        Route::delete('/barang/destroy/{id}',[\App\Http\Controllers\BarangController::class, 'destroy']);
+
+        Route::get('/transaksi',[\App\Http\Controllers\TransaksiController::class, 'index']);
+        Route::get('/transaksi/create',[\App\Http\Controllers\TransaksiController::class, 'create']);
+        Route::get('/transaksi/detail/{id}',[\App\Http\Controllers\TransaksiController::class, 'detail']);
+        Route::post('/transaksi/store',[\App\Http\Controllers\TransaksiController::class, 'store']);
+
+        Route::post('/transaksi/patch',[\App\Http\Controllers\TransaksiController::class, 'patch']);
+        Route::delete('/transaksi/destroy/{id}',[\App\Http\Controllers\TransaksiController::class, 'destroy']);
+
+        Route::post('/transaksi/cart/store',[\App\Http\Controllers\TransaksiController::class, 'addCart']);
+        Route::post('/transaksi/cart/destroy/{id}',[\App\Http\Controllers\TransaksiController::class, 'deleteCart']);
+        Route::get('/transaksi/cart',[\App\Http\Controllers\TransaksiController::class, 'getCartNoTransaction']);
+
+        Route::get('/perhitungan',[\App\Http\Controllers\PerhitunganController::class, 'page']);
     });
 
 Route::get('/hitung', [\App\Http\Controllers\PerhitunganController::class, 'index']);

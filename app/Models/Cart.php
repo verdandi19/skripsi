@@ -12,11 +12,11 @@ class Cart extends Model
 
     public function barang()
     {
-        $this->belongsTo(Barang::class, 'barang_id');
+        return $this->belongsTo(Barang::class, 'barang_id');
     }
 
     public function transaction()
     {
-        $this->belongsTo(Transaction::class, 'transaction_id');
+        return $this->belongsTo(Transaction::class, 'transaction_id');
     }
 }

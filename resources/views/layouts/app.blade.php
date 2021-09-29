@@ -43,4 +43,5 @@
 
         @livewireScripts
     </body>
+@yield('moreJs')
 </html>

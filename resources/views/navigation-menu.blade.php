@@ -18,20 +18,26 @@
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-jet-nav-link href="/dashboard/data" :active="request()->routeIs('dashboard/data')">
+                    <x-jet-nav-link href="/dashboard/barang" :active="request()->routeIs('dashboard/data')">
+                        {{ __('Data Barang') }}
+                    </x-jet-nav-link>
+                </div>
+
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-jet-nav-link href="/dashboard/transaksi" :active="request()->routeIs('dashboard/data')">
                         {{ __('Data Transaksi') }}
                     </x-jet-nav-link>
                 </div>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-jet-nav-link href="/dashboard/proses" :active="request()->routeIs('dashboard/proses')">
-                        {{ __('Data Proses') }}
-                    </x-jet-nav-link>
-                </div>
+{{--                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">--}}
+{{--                    <x-jet-nav-link href="/dashboard/proses" :active="request()->routeIs('dashboard/proses')">--}}
+{{--                        {{ __('Data Proses') }}--}}
+{{--                    </x-jet-nav-link>--}}
+{{--                </div>--}}
 
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-jet-nav-link href="/dashboard/hasils" :active="request()->routeIs('dashboard/hasils')">
-                        {{ __('Data Hasil') }}
+                    <x-jet-nav-link href="/dashboard/perhitungan" :active="request()->routeIs('dashboard/hasils')">
+                        {{ __('Data Perhitungan') }}
                     </x-jet-nav-link>
                 </div>
 
