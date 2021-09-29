@@ -74,7 +74,6 @@
                     let support = $('#support').val();
                     let confidence = $('#confidence').val();;
                     let response = await $.get('/mapping2?awal=' + awal + '&akhir=' + akhir + '&support=' + support + '&confidence=' + confidence);
-                    if(response)
                 } catch (e) {
                     console.log(e)
                 }
