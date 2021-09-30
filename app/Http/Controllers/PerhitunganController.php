@@ -164,7 +164,7 @@ class PerhitunganController extends Controller
 
             $data_association = [];
             foreach ($data_confidence as $dc) {
-                if ($dc['confidence'] >= $minConfidence) {
+                if ($dc['confidence'] >= $minConfidence && $dc['support'] >= $minSupport) {
                     $last_item = end($dc['item_set']);
                     $bc_multiplier = count($this->getItemExist([$last_item]));
                     $benchmark_confidence = round(($bc_multiplier * 100) / $countTransaction, 1, PHP_ROUND_HALF_UP);
