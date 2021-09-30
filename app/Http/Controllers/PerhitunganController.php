@@ -46,9 +46,9 @@ class PerhitunganController extends Controller
         return array_pop($data);
     }
 
-    private function getItemExist($data = [], $vAwal, $vAkhir)
+    private function getItemExist($data = [])
     {
-        $trans = Transaction::with(['cart'])->whereBetween('tgl_transaksi', [$vAwal, $vAkhir]);
+        $trans = Transaction::with(['cart']);
         foreach ($data as $i) {
             $trans->whereHas('cart', function ($query) use ($i) {
                 $query->where('barang_id', $i);
@@ -102,7 +102,7 @@ class PerhitunganController extends Controller
                     }
                     $tmpResults['item_set'] = $item_set;
                     $tmpResults['title'] = $item_title;
-                    $tmpCount = count($this->getItemExist($item_set, $vAwal, $vAkhir));
+                    $tmpCount = count($this->getItemExist($item_set));
                     $tmpResults['count'] = $tmpCount;
                     $support = round(($tmpCount * 100) / $countTransaction, 1, PHP_ROUND_HALF_UP);
                     if ($support >= $minSupport) {
@@ -144,7 +144,7 @@ class PerhitunganController extends Controller
                             $set_count = $di['count'];
                             $set_title = $di['title'];
                             $set_support = $di['support'];
-                            $confidence_divider = count($this->getItemExist([$set[0]], $vAwal, $vAkhir));
+                            $confidence_divider = count($this->getItemExist([$set[0]]));
                             $confidence = round(($set_count * 100) / $confidence_divider, 1, PHP_ROUND_HALF_UP);
                             $tmpDS['title'] = $set_title;
                             $tmpDS['set'] = $data_set;
@@ -166,7 +166,7 @@ class PerhitunganController extends Controller
             foreach ($data_confidence as $dc) {
                 if ($dc['confidence'] >= $minConfidence && $dc['support'] >= $minSupport) {
                     $last_item = end($dc['item_set']);
-                    $bc_multiplier = count($this->getItemExist([$last_item], $vAwal, $vAkhir));
+                    $bc_multiplier = count($this->getItemExist([$last_item]));
                     $benchmark_confidence = round(($bc_multiplier * 100) / $countTransaction, 1, PHP_ROUND_HALF_UP);
                     $lift_ratio = round($dc['confidence'] / $benchmark_confidence, 5, PHP_ROUND_HALF_UP);
                     $dc['benchmark'] = $benchmark_confidence;
